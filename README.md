@@ -1,22 +1,22 @@
 # AI-Based Text Summarization Platform
+A professional full-stack application that provides executive summaries of long text and PDF documents using advanced analytical engines.
 
-A full-stack web application that leverages Artificial Intelligence to summarize long text and PDF documents into concise insights.
+## 🔗 Repository Link
+[https://github.com/bhardadharmishtha2005/AI_Summarizer](https://github.com/bhardadharmishtha2005/AI_Summarizer)
 
 ## 🚀 Features
-* **Multi-Format Input**: Supports raw text pasting and PDF file uploads.
-* **Dynamic Summarization**: Uses OpenAI's GPT-4o model to generate summaries.
-* **Length Control**: Choose between Short, Medium, or Long summaries.
-* **Responsive UI**: Built with Tailwind CSS for a professional look[cite: 1].
+- **Multi-Format Support**: Processes raw text and PDF file uploads.
+- **Refined Analysis**: Delivers professional, human-like summaries without AI labels.
+- **Resilient Backend**: Built-in retry logic to handle high-demand server spikes.
 
 ## 🛠️ Technology Stack
-* **Frontend**: HTML5, Tailwind CSS, JavaScript (Fetch API)[cite: 1, 2].
-* **Backend**: Python FastAPI[cite: 1, 2].
-* **AI Integration**: OpenAI API[cite: 1, 2].
-* **PDF Processing**: PyMuPDF (fitz)[cite: 1, 2].
+- **Frontend**: HTML5, CSS3, JavaScript (Fetch API)
+- **Backend**: Python FastAPI
+- **AI Engine**: Gemini 2.5 Flash Stable Architecture
+- **PDF Extraction**: PyMuPDF (fitz)
 
-## 📦 Installation & Setup
-
+## ⚙️ Installation & Setup
 1. **Clone the repository**:
    ```bash
-   git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-   cd your-repo-name
+   git clone [https://github.com/bhardadharmishtha2005/AI_Summarizer.git](https://github.com/bhardadharmishtha2005/AI_Summarizer.git)
+   cd AI_Summarizer
