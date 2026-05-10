@@ -25,21 +25,17 @@ app.add_middleware(
 )
 
 def generate_professional_summary(text_content):
-    # Updated to the correct v1beta version and gemini-1.5-flash model
+    # This is the most stable production endpoint for Gemini 1.5 Flash
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
-    prompt = f"""
-    You are an expert executive assistant. Summarize the following text professionally.
-    - Do not use robotic phrases like 'Here is a summary'.
-    - Provide clear, insightful paragraphs.
-    - Focus on core value points.
-    - Ensure the tone is indistinguishable from a human expert.
-
-    TEXT TO ANALYZE:
-    {text_content[:4000]}
-    """
-
-    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    # Ensure the payload matches the expected Google API structure exactly
+    payload = {
+        "contents": [{
+            "parts": [{
+                "text": f"Summarize this text like a human expert: {text_content[:4000]}"
+            }]
+        }]
+    }
     
     try:
         response = requests.post(url, json=payload, timeout=15)
@@ -47,10 +43,10 @@ def generate_professional_summary(text_content):
             result = response.json()
             return result["candidates"][0]["content"]["parts"][0]["text"]
         else:
-            # This helps you see the error in the UI during your demo
-            return f"AI Service Error: {response.status_code}. Please check your model name and API key."
+            # This helps you debug in your demo if it fails again
+            return f"Error: Status {response.status_code}. Details: {response.text}"
     except Exception as e:
-        return "The system is currently refining its analysis. Please try again."
+        return f"System Error: {str(e)}"
 
 @app.post("/summarize")
 async def handle_request(text: str = Form(None), file: UploadFile = File(None)):
