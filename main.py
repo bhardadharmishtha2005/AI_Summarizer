@@ -25,7 +25,7 @@ app.add_middleware(
 )
 
 def generate_professional_summary(text_content):
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     payload = {"contents": [{"parts": [{"text": f"Summarize this professionally: {text_content[:4000]}"}]}]}
     
