@@ -32,7 +32,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Summary Function
 def generate_professional_summary(text_content):
 
     try:
@@ -40,7 +39,7 @@ def generate_professional_summary(text_content):
         response = client.models.generate_content(
             model="gemini-2.0-flash",
             contents=f"""
-            Write a professional, human-like summary
+            Write a professional summary
             of the following content:
 
             {text_content[:4000]}
@@ -51,7 +50,18 @@ def generate_professional_summary(text_content):
 
     except Exception as e:
 
-        return f"Gemini Error: {str(e)}"
+        error_message = str(e)
+
+        if "429" in error_message:
+
+            return """
+Quota Limit Reached.
+
+Your Gemini API free limit is exhausted.
+Please try again later or use a new API key.
+"""
+
+        return f"Gemini Error: {error_message}"
 
 
 # API Route
