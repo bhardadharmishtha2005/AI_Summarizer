@@ -26,7 +26,7 @@ app.add_middleware(
 
 def generate_professional_summary(text_content):
     # This is the most stable production endpoint for Gemini 1.5 Flash
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     # Ensure the payload matches the expected Google API structure exactly
     payload = {
