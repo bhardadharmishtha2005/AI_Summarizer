@@ -7,7 +7,7 @@ from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-# Ensure the system path is correct for Vercel
+# Ensure system path is correct for Vercel environments
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 load_dotenv()
@@ -15,7 +15,7 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 
 app = FastAPI()
 
-# Fixes the CORS 'Forbidden' error seen in your console logs
+# Fixes the 'Forbidden' connection error in your logs
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,9 +25,10 @@ app.add_middleware(
 )
 
 def generate_professional_summary(text_content):
-    # Using the Gemini model you specified
+    # Using the Gemini model for high-quality analysis
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
+    # Custom prompt for 'Human-like' summaries
     prompt = f"""
     You are an expert executive assistant. Summarize the following text professionally.
     - Do not use robotic phrases like 'Here is a summary'.
@@ -58,6 +59,7 @@ def generate_professional_summary(text_content):
 async def handle_request(text: str = Form(None), file: UploadFile = File(None)):
     final_text = ""
     
+    # Support for both manual text and PDF uploads
     if file and file.filename.endswith(".pdf"):
         pdf_data = await file.read()
         doc = fitz.open(stream=pdf_data, filetype="pdf")
@@ -73,7 +75,6 @@ async def handle_request(text: str = Form(None), file: UploadFile = File(None)):
     summary = generate_professional_summary(final_text)
     return {"summary": summary}
 
-# This is critical for Vercel's execution plan
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
