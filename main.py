@@ -25,13 +25,14 @@ app.add_middleware(
 )
 
 def generate_professional_summary(text_content):
-    # This is the standard production URL for Gemini 1.5 Flash
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+    # This is the exact production URL for Gemini 1.5 Flash
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
+    # The payload MUST be in this exact nested structure
     payload = {
         "contents": [{
             "parts": [{
-                "text": f"Provide a professional, human-like summary of this text: {text_content[:4000]}"
+                "text": f"Summarize this text like a human expert: {text_content[:4000]}"
             }]
         }]
     }
@@ -39,9 +40,9 @@ def generate_professional_summary(text_content):
     try:
         response = requests.post(url, json=payload, timeout=15)
         
-        # If still 404, the API key itself might not be authorized for Flash
+        # If this still returns 404, we will see the EXACT reason here
         if response.status_code != 200:
-            return f"Error {response.status_code}: {response.text}"
+            return f"Technical Error {response.status_code}: {response.text}"
             
         result = response.json()
         return result["candidates"][0]["content"]["parts"][0]["text"]
