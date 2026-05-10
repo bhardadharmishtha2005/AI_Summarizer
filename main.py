@@ -1,17 +1,21 @@
-import fitz  # PyMuPDF for PDF extraction [cite: 52]
+import fitz  # PyMuPDF for PDF extraction
 import requests
 import os
 import time
+import sys
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
+# Ensure the system path is correct for Vercel
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 
-
 app = FastAPI()
 
+# Fixes the CORS 'Forbidden' error seen in your console logs
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,9 +25,9 @@ app.add_middleware(
 )
 
 def generate_professional_summary(text_content):
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={API_KEY}"
+    # Using the Gemini model you specified
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
-    # System instruction to ensure "Human-Like" output without AI labels
     prompt = f"""
     You are an expert executive assistant. Summarize the following text professionally.
     - Do not use robotic phrases like 'Here is a summary'.
@@ -37,14 +41,16 @@ def generate_professional_summary(text_content):
 
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     
-    # Retry logic for robust performance during the demo 
     for attempt in range(3):
-        response = requests.post(url, json=payload)
-        if response.status_code == 200:
-            result = response.json()
-            return result["candidates"][0]["content"]["parts"][0]["text"]
-        elif response.status_code == 503:
-            time.sleep(2)
+        try:
+            response = requests.post(url, json=payload, timeout=10)
+            if response.status_code == 200:
+                result = response.json()
+                return result["candidates"][0]["content"]["parts"][0]["text"]
+            elif response.status_code == 503:
+                time.sleep(2)
+                continue
+        except Exception:
             continue
     return "The system is currently refining its analysis. Please try again in a moment."
 
@@ -52,7 +58,6 @@ def generate_professional_summary(text_content):
 async def handle_request(text: str = Form(None), file: UploadFile = File(None)):
     final_text = ""
     
-    # Handle PDF and Text inputs [cite: 48, 50]
     if file and file.filename.endswith(".pdf"):
         pdf_data = await file.read()
         doc = fitz.open(stream=pdf_data, filetype="pdf")
@@ -67,3 +72,8 @@ async def handle_request(text: str = Form(None), file: UploadFile = File(None)):
 
     summary = generate_professional_summary(final_text)
     return {"summary": summary}
+
+# This is critical for Vercel's execution plan
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
