@@ -30,17 +30,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Gemini Summary Function
 def generate_professional_summary(text_content):
     try:
-        # Stable Gemini Model
-        model = genai.GenerativeModel("gemini-1.5-flash")
+
+        model = genai.GenerativeModel(
+            "models/gemini-pro"
+        )
 
         response = model.generate_content(
             f"""
-            Write a professional, clear, human-like summary of the following content.
+            Write a professional, human-like summary
+            of the following content:
 
-            Content:
             {text_content[:4000]}
             """
         )
