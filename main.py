@@ -33,14 +33,11 @@ app.add_middleware(
 def generate_professional_summary(text_content):
     try:
 
-        model = genai.GenerativeModel(
-            "models/gemini-pro"
-        )
+        model = genai.GenerativeModel("gemini-pro")
 
         response = model.generate_content(
             f"""
-            Write a professional, human-like summary
-            of the following content:
+            Write a professional summary of this:
 
             {text_content[:4000]}
             """
