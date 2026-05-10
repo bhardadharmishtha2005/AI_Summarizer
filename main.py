@@ -1,7 +1,7 @@
 import fitz
 import os
 import sys
-
+import requests
 from google import genai
 
 from fastapi import FastAPI, UploadFile, File, Form
@@ -33,35 +33,30 @@ app.add_middleware(
 )
 
 def generate_professional_summary(text_content):
-
+    # This specific 'v1beta' URL with 'gemini-1.5-flash' is the most reliable for new free keys
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+    
+    payload = {
+        "contents": [{
+            "parts": [{
+                "text": f"Provide a professional, human-like summary of this text: {text_content[:4000]}"
+            }]
+        }]
+    }
+    
     try:
-
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=f"""
-            Write a professional summary
-            of the following content:
-
-            {text_content[:4000]}
-            """
-        )
-
-        return response.text
-
+        # Increased timeout to 30s to handle free-tier slow responses
+        response = requests.post(url, json=payload, timeout=30)
+        
+        if response.status_code == 200:
+            result = response.json()
+            return result["candidates"][0]["content"]["parts"][0]["text"]
+        else:
+            # If this still fails, it will tell us the EXACT reason (e.g. Quota vs Key)
+            return f"Service Notification: {response.status_code}. {response.text}"
+            
     except Exception as e:
-
-        error_message = str(e)
-
-        if "429" in error_message:
-
-            return """
-Quota Limit Reached.
-
-Your Gemini API free limit is exhausted.
-Please try again later or use a new API key.
-"""
-
-        return f"Gemini Error: {error_message}"
+        return f"Connection Insight: {str(e)}"
 
 
 # API Route
