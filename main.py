@@ -26,7 +26,8 @@ app.add_middleware(
 
 def generate_professional_summary(text_content):
     # This is the exact production URL for Gemini 1.5 Flash
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+    # This uses the 'latest' alias which is the most stable way to avoid 404 errors
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}"
     
     # The payload MUST be in this exact nested structure
     payload = {
