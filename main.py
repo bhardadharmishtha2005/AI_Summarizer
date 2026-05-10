@@ -33,30 +33,21 @@ app.add_middleware(
 )
 
 def generate_professional_summary(text_content):
-    # This specific 'v1beta' URL with 'gemini-1.5-flash' is the most reliable for new free keys
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
-    
-    payload = {
-        "contents": [{
-            "parts": [{
-                "text": f"Provide a professional, human-like summary of this text: {text_content[:4000]}"
-            }]
-        }]
-    }
-    
     try:
-        # Increased timeout to 30s to handle free-tier slow responses
-        response = requests.post(url, json=payload, timeout=30)
+        # Using the SDK 'client' you already defined at the top of your file
+        # gemini-3-flash-preview is the most stable free model for May 2026
+        response = client.models.generate_content(
+            model='gemini-3-flash-preview', 
+            contents=f"Provide a professional, human-like summary of this text: {text_content[:4000]}"
+        )
         
-        if response.status_code == 200:
-            result = response.json()
-            return result["candidates"][0]["content"]["parts"][0]["text"]
-        else:
-            # If this still fails, it will tell us the EXACT reason (e.g. Quota vs Key)
-            return f"Service Notification: {response.status_code}. {response.text}"
-            
+        if response.text:
+            return response.text
+        return "Error: No summary generated."
+
     except Exception as e:
-        return f"Connection Insight: {str(e)}"
+        # This will tell you if it's a Quota (429) or Auth (403) error
+        return f"System Insight: {str(e)}"
 
 
 # API Route
