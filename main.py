@@ -25,29 +25,29 @@ app.add_middleware(
 )
 
 def generate_professional_summary(text_content):
-    # This is the exact production URL for Gemini 1.5 Flash
-    # This uses the 'latest' alias which is the most stable way to avoid 404 errors
-    # This uses the 'latest' alias which is the most stable way to avoid 404 errors
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}"
+    # Using the current stable production model for May 2026
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={API_KEY}"
     
-    # The payload MUST be in this exact nested structure
     payload = {
         "contents": [{
             "parts": [{
-                "text": f"Summarize this text like a human expert: {text_content[:4000]}"
+                "text": f"Write a professional, human-like summary of the following: {text_content[:4000]}"
             }]
         }]
     }
     
     try:
-        response = requests.post(url, json=payload, timeout=15)
+        response = requests.post(url, json=payload, timeout=20)
         
-        # If this still returns 404, we will see the EXACT reason here
-        if response.status_code != 200:
-            return f"Technical Error {response.status_code}: {response.text}"
+        # This will now give you a 200 Success if your API Key is valid
+        if response.status_code == 200:
+            result = response.json()
+            return result["candidates"][0]["content"]["parts"][0]["text"]
+        else:
+            # Displays the exact error from Google to stop the guesswork
+            error_info = response.json().get("error", {}).get("message", "Unknown Error")
+            return f"API Status {response.status_code}: {error_info}"
             
-        result = response.json()
-        return result["candidates"][0]["content"]["parts"][0]["text"]
     except Exception as e:
         return f"Connection Error: {str(e)}"
 
