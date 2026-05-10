@@ -9,12 +9,13 @@ from dotenv import load_dotenv
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 
+
 app = FastAPI()
 
-# Enable connection between frontend and backend [cite: 84]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"], # This allows all origins (ideal for your internship submission)
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
